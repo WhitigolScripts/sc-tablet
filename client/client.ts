@@ -45,7 +45,7 @@ RegisterKeyMapping(
 if (config.vehicle.checkSpeed) {
     setTick(async () => {
         while (true) {
-            await delay(0);
+            await delay(300);
             const ped = PlayerPedId();
             const isInVehicle = IsPedInAnyVehicle(ped, false);
             if (!isNuiOpen) continue;
