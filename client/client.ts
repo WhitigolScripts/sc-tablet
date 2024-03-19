@@ -7,20 +7,28 @@ import NuiMessage from "../util/nuiMessage";
 /* CLIENT SCRPIT */
 let isNuiOpen = false;
 
-NuiMessage({
-    type: "init",
-    name: config.cadName,
-    url: config.cadUrl,
+on("onClientResourceStart", async (resource: string) => {
+    if (resource !== GetCurrentResourceName()) return;
+
+    await delay(1000);
+
+    NuiMessage({
+        type: "init",
+        data: {
+            name: config.cadName,
+            url: config.cadUrl,
+        },
+    });
 });
 
 RegisterCommand(
     config.command,
     () => {
         isNuiOpen = !isNuiOpen;
-        NuiMessage({
-            type: isNuiOpen ? "close" : "open",
-        });
         SetNuiFocus(isNuiOpen, isNuiOpen);
+        NuiMessage({
+            type: isNuiOpen ? "open" : "close",
+        });
     },
     false
 );
@@ -40,16 +48,16 @@ if (config.vehicle.checkSpeed) {
             await delay(0);
             const ped = PlayerPedId();
             const isInVehicle = IsPedInAnyVehicle(ped, false);
+            if (!isNuiOpen) continue;
             if (isInVehicle) {
-                if (
-                    config.vehicle.exemptPassenger &&
-                    GetPedInVehicleSeat(GetVehiclePedIsIn(ped, false), -1) ===
-                        ped
-                ) {
-                    continue;
+                // Passengers can be exempt from speed check. If the ped is a passenger, we skip the speed check.
+                const vehicle = GetVehiclePedIsIn(ped, false);
+
+                if (config.vehicle.exemptPassengers) {
+                    const driver = GetPedInVehicleSeat(vehicle, -1);
+                    if (driver !== ped) continue;
                 }
 
-                const vehicle = GetVehiclePedIsIn(ped, false);
                 const speed = GetEntitySpeed(vehicle) * 2.23694;
                 if (speed > config.vehicle.speed) {
                     NuiMessage({
@@ -64,3 +72,9 @@ if (config.vehicle.checkSpeed) {
         }
     });
 }
+
+RegisterNuiCallbackType("close");
+on("__cfx_nui:close", () => {
+    SetNuiFocus(false, false);
+    isNuiOpen = false;
+});

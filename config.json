@@ -12,7 +12,7 @@
     "vehicle": {
         "checkSpeed": true,
         "speed": 10,
-        "exemptPassenger": true,
+        "exemptPassengers": true,
         "_↑": [
             "If checkSpeed is true, it will not allow you to open the CAD if you are going above the specified speed above.",
             "If the vehicle goes above the specified speed, it will automatically close the CAD.",

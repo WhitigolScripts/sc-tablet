@@ -10,8 +10,8 @@ export interface Config {
 }
 
 export interface Vehicle {
-    checkSpeed:      boolean;
-    speed:           number;
-    exemptPassenger: boolean;
-    "_↑":            string[];
+    checkSpeed:       boolean;
+    speed:            number;
+    exemptPassengers: boolean;
+    "_↑":             string[];
 }
